@@ -34,6 +34,7 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* 1. Public Routes: Accessible by everyone */}
+          
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
