@@ -131,7 +131,7 @@ const Footer = () => {
               Contact
             </Link>
             <Link
-              to="/admin"
+              to="/admin/login"
               className="text-[10px] font-black uppercase tracking-widest text-gray-100 hover:text-gray-300 transition-colors"
             >
               Admin
