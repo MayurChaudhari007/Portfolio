@@ -1,6 +1,8 @@
-// import React, { useState, useEffect } from "react";
+
+// import React, { useState } from "react";
 // import { Link } from "react-router-dom";
 // import { motion } from "framer-motion";
+// import { useQuery } from "@tanstack/react-query";
 // import postService from "../../services/postService";
 
 // /* ---------------- ANIMATION VARIANTS ---------------- */
@@ -68,36 +70,16 @@
 //             onClick={prevImage}
 //             className="absolute left-2 top-1/2 cursor-cta -translate-y-1/2 bg-black/30 hover:bg-indigo-600 text-white p-1.5 rounded-full opacity-0 group-hover/slider:opacity-100 transition-all z-10"
 //           >
-//             <svg
-//               className="w-4 h-4"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 d="M15 19l-7-7 7-7"
-//                 strokeWidth="2.5"
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//               />
+//             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path d="M15 19l-7-7 7-7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
 //             </svg>
 //           </button>
 //           <button
 //             onClick={nextImage}
 //             className="absolute right-2 top-1/2 cursor-cta -translate-y-1/2 bg-black/30 hover:bg-indigo-600 text-white p-1.5 rounded-full opacity-0 group-hover/slider:opacity-100 transition-all z-10"
 //           >
-//             <svg
-//               className="w-4 h-4"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 d="M9 5l7 7-7 7"
-//                 strokeWidth="2.5"
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//               />
+//             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path d="M9 5l7 7-7 7" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
 //             </svg>
 //           </button>
 
@@ -120,24 +102,17 @@
 // /* ---------------- MAIN COMPONENT ---------------- */
 
 // const HomeBlogs = () => {
-//   const [recentActivities, setRecentActivities] = useState([]);
-//   const [loading, setLoading] = useState(true);
 
-//   useEffect(() => {
-//     const fetchPosts = async () => {
-//       try {
-//         const postData = await postService.getPublicPosts();
-//         setRecentActivities((postData.data || postData).slice(0, 3));
-//       } catch (error) {
-//         console.error("Error fetching recent posts:", error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-//     fetchPosts();
-//   }, []);
+//   // 🔥 React Query caching for blog posts
+//   const { data: recentActivities = [], isLoading } = useQuery({
+//     queryKey: ["blogs"],
+//     queryFn: async () => {
+//       const postData = await postService.getPublicPosts();
+//       return (postData.data || postData).slice(0, 3);
+//     },
+//   });
 
-//   if (loading) return null;
+//   if (isLoading) return null;
 
 //   return (
 //     <motion.section
@@ -148,6 +123,7 @@
 //       className="py-16 md:py-24 bg-slate-50 border-y border-gray-100"
 //     >
 //       <div className="mx-auto max-w-7xl px-6 lg:px-8">
+
 //         {/* HEADER */}
 //         <motion.div
 //           variants={headerVariants}
@@ -184,24 +160,13 @@
 //               whileHover={{ y: -10 }}
 //               className="flex flex-col bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden transition-all duration-500 hover:shadow-2xl group"
 //             >
-//               {/* IMAGE */}
 //               <div className="relative h-64 md:h-72 bg-slate-200 overflow-hidden">
 //                 {post.images && post.images.length > 0 ? (
 //                   <BlogImageSlider images={post.images} />
 //                 ) : (
 //                   <div className="h-full flex items-center justify-center bg-indigo-50 text-indigo-200">
-//                     <svg
-//                       className="w-12 h-12"
-//                       fill="none"
-//                       stroke="currentColor"
-//                       viewBox="0 0 24 24"
-//                     >
-//                       <path
-//                         strokeLinecap="round"
-//                         strokeLinejoin="round"
-//                         strokeWidth="1"
-//                         d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z"
-//                       />
+//                     <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z" />
 //                     </svg>
 //                   </div>
 //                 )}
@@ -212,7 +177,6 @@
 //                 </div>
 //               </div>
 
-//               {/* CONTENT */}
 //               <div className="p-8 md:p-10 flex flex-col flex-1">
 //                 <time className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-4">
 //                   {new Date(post.createdAt).toLocaleDateString("en-US", {
@@ -240,7 +204,6 @@
 //           ))}
 //         </motion.div>
 
-//         {/* EMPTY STATE */}
 //         {recentActivities.length === 0 && (
 //           <motion.div
 //             variants={headerVariants}
@@ -263,7 +226,7 @@
 
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import postService from "../../services/postService";
 
@@ -278,6 +241,11 @@ const sectionVariants = {
       delayChildren: 0.2,
     },
   },
+  // Added exit for repetitive scroll-up effect
+  exit: { 
+    opacity: 0, 
+    transition: { staggerChildren: 0.1, staggerDirection: -1 } 
+  }
 };
 
 const headerVariants = {
@@ -287,6 +255,7 @@ const headerVariants = {
     y: 0,
     transition: { duration: 0.7, ease: "easeOut" },
   },
+  exit: { opacity: 0, y: -40 }
 };
 
 const cardVariants = {
@@ -297,9 +266,10 @@ const cardVariants = {
     scale: 1,
     transition: { duration: 0.6, ease: "easeOut" },
   },
+  exit: { opacity: 0, y: -60, scale: 0.96 }
 };
 
-/* ---------------- IMAGE SLIDER ---------------- */
+/* ---------------- IMAGE SLIDER (Kept Original) ---------------- */
 
 const BlogImageSlider = ({ images }) => {
   const [current, setCurrent] = useState(0);
@@ -318,13 +288,19 @@ const BlogImageSlider = ({ images }) => {
 
   return (
     <div className="relative w-full h-full group/slider overflow-hidden">
-      <motion.img
-        src={images[current]}
-        className="w-full h-full object-cover"
-        alt="activity"
-        whileHover={{ scale: 1.08 }}
-        transition={{ duration: 0.5 }}
-      />
+      <AnimatePresence mode="wait">
+        <motion.img
+          key={current}
+          src={images[current]}
+          className="w-full h-full object-cover"
+          alt="activity"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          whileHover={{ scale: 1.08 }}
+          transition={{ duration: 0.5 }}
+        />
+      </AnimatePresence>
 
       {images.length > 1 && (
         <>
@@ -365,24 +341,30 @@ const BlogImageSlider = ({ images }) => {
 
 const HomeBlogs = () => {
 
-  // 🔥 React Query caching for blog posts
   const { data: recentActivities = [], isLoading } = useQuery({
-    queryKey: ["blogs"],
+    queryKey: ["blogs-home"],
     queryFn: async () => {
       const postData = await postService.getPublicPosts();
-      return (postData.data || postData).slice(0, 3);
+      const allPosts = postData.data || postData;
+      
+      // ✅ Filtering: Ensure only published/home-ready posts appear
+      // (Adjust 'isPublished' or 'featured' based on your actual post schema)
+      return allPosts
+        .filter((post) => post.isPublished !== false) 
+        .slice(0, 3);
     },
   });
 
-  if (isLoading) return null;
+  if (isLoading || (recentActivities.length === 0 && !isLoading)) return null;
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
-      className="py-16 md:py-24 bg-slate-50 border-y border-gray-100"
+      variants={sectionVariants}
+      initial="hidden"
+      whileInView="show"
+      exit="exit"
+      viewport={{ once: false, margin: "-100px" }}
+      className="py-16 md:py-24 bg-white border-y border-gray-100"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
 
@@ -434,7 +416,7 @@ const HomeBlogs = () => {
                 )}
                 <div className="absolute top-5 left-5 z-20">
                   <span className="px-4 py-1.5 bg-white/95 backdrop-blur shadow-sm text-indigo-600 text-[10px] font-black uppercase tracking-[0.15em] rounded-full border border-indigo-50">
-                    {post.category}
+                    {post.category || "General"}
                   </span>
                 </div>
               </div>
@@ -465,17 +447,6 @@ const HomeBlogs = () => {
             </motion.div>
           ))}
         </motion.div>
-
-        {recentActivities.length === 0 && (
-          <motion.div
-            variants={headerVariants}
-            className="text-center py-20 bg-white rounded-[2rem] border-2 border-dashed border-slate-200"
-          >
-            <p className="text-slate-400 font-bold uppercase tracking-widest">
-              Fresh updates are on the way!
-            </p>
-          </motion.div>
-        )}
       </div>
     </motion.section>
   );

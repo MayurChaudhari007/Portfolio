@@ -27,7 +27,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-white border-t border-gray-100 pt-12 md:pt-16 pb-8 mt-10 md:mt-20">
+    <footer className="bg-slate-50 border-t border-gray-100 pt-12 md:pt-16 pb-8 mt-10 md:mt-20">
       <div className="max-w-7xl mx-auto px-6">
         {/* Responsive Grid: Stacks on small screens (col-1), 3 columns on medium+ (md:grid-cols-3) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 mb-12">

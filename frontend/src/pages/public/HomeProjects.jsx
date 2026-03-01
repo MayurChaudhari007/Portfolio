@@ -1,6 +1,8 @@
-// import React, { useState, useEffect } from "react";
+
+// import React, { useState } from "react";
 // import { Link } from "react-router-dom";
 // import { motion } from "framer-motion";
+// import { useQuery } from "@tanstack/react-query";
 // import projectService from "../../services/projectService";
 
 // /* ---------------- ANIMATION VARIANTS ---------------- */
@@ -74,36 +76,16 @@
 //             onClick={prevImage}
 //             className="absolute cursor-cta left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-indigo-600 text-white p-2 rounded-full opacity-0 group-hover/slider:opacity-100 transition-all z-10"
 //           >
-//             <svg
-//               className="w-3.5 h-3.5"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 d="M15 19l-7-7 7-7"
-//                 strokeWidth="3"
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//               />
+//             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path d="M15 19l-7-7 7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
 //             </svg>
 //           </button>
 //           <button
 //             onClick={nextImage}
 //             className="absolute cursor-cta right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-indigo-600 text-white p-2 rounded-full opacity-0 group-hover/slider:opacity-100 transition-all z-10"
 //           >
-//             <svg
-//               className="w-3.5 h-3.5"
-//               fill="none"
-//               stroke="currentColor"
-//               viewBox="0 0 24 24"
-//             >
-//               <path
-//                 d="M9 5l7 7-7 7"
-//                 strokeWidth="3"
-//                 strokeLinecap="round"
-//                 strokeLinejoin="round"
-//               />
+//             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//               <path d="M9 5l7 7-7 7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
 //             </svg>
 //           </button>
 
@@ -126,26 +108,18 @@
 // /* ---------------- MAIN COMPONENT ---------------- */
 
 // const HomeProjects = () => {
-//   const [featuredProjects, setFeaturedProjects] = useState([]);
-//   const [loading, setLoading] = useState(true);
 
-//   useEffect(() => {
-//     const fetchFeatured = async () => {
-//       try {
-//         const response = await projectService.getProjects();
-//         const allProjects = response.data || response;
-//         const featured = allProjects.filter((p) => p.featured).slice(0, 3);
-//         setFeaturedProjects(featured);
-//       } catch (error) {
-//         console.error("Error fetching featured projects:", error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-//     fetchFeatured();
-//   }, []);
+//   // 🔥 React Query caching for projects
+//   const { data: featuredProjects = [], isLoading } = useQuery({
+//     queryKey: ["projects"],
+//     queryFn: async () => {
+//       const response = await projectService.getProjects();
+//       const allProjects = response.data || response;
+//       return allProjects.filter((p) => p.featured).slice(0, 3);
+//     },
+//   });
 
-//   if (loading || featuredProjects.length === 0) return null;
+//   if (isLoading || featuredProjects.length === 0) return null;
 
 //   return (
 //     <motion.section
@@ -156,6 +130,7 @@
 //       className="bg-white py-16 md:py-24"
 //     >
 //       <div className="mx-auto max-w-7xl px-6 lg:px-8">
+
 //         {/* HEADER */}
 //         <motion.div
 //           variants={headerVariants}
@@ -194,15 +169,11 @@
 //               className="group cursor-project flex flex-col h-full"
 //             >
 //               <div className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 overflow-hidden transition-all duration-500 flex flex-col h-full border-b-4 hover:border-b-indigo-600 hover:shadow-[0_25px_60px_rgba(79,70,229,0.15)]">
-//                 {/* IMAGE */}
+                
 //                 <div className="aspect-video bg-slate-50 relative overflow-hidden">
-//                   <ProjectImageSlider
-//                     images={project.images}
-//                     title={project.title}
-//                   />
+//                   <ProjectImageSlider images={project.images} title={project.title} />
 //                 </div>
 
-//                 {/* CONTENT */}
 //                 <div className="p-6 md:p-8 flex flex-col flex-1">
 //                   <h3 className="text-xl font-black text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">
 //                     {project.title}
@@ -254,6 +225,7 @@
 //                       )}
 //                     </div>
 //                   </div>
+
 //                 </div>
 //               </div>
 //             </motion.div>
@@ -261,10 +233,7 @@
 //         </motion.div>
 
 //         {/* MOBILE BUTTON */}
-//         <motion.div
-//           variants={headerVariants}
-//           className="mt-12 sm:hidden text-center"
-//         >
+//         <motion.div variants={headerVariants} className="mt-12 sm:hidden text-center">
 //           <Link
 //             to="/projects"
 //             className="inline-block px-10 py-4 bg-slate-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl"
@@ -278,7 +247,6 @@
 // };
 
 // export default HomeProjects;
-
 
 
 
@@ -299,6 +267,11 @@ const sectionVariants = {
       delayChildren: 0.2,
     },
   },
+  // Added exit for repetitive scroll-up effect
+  exit: { 
+    opacity: 0, 
+    transition: { staggerChildren: 0.1, staggerDirection: -1 } 
+  }
 };
 
 const headerVariants = {
@@ -308,6 +281,7 @@ const headerVariants = {
     y: 0,
     transition: { duration: 0.7, ease: "easeOut" },
   },
+  exit: { opacity: 0, y: -40 }
 };
 
 const cardVariants = {
@@ -318,9 +292,10 @@ const cardVariants = {
     scale: 1,
     transition: { duration: 0.6, ease: "easeOut" },
   },
+  exit: { opacity: 0, y: -60, scale: 0.95 }
 };
 
-/* ---------------- IMAGE SLIDER ---------------- */
+/* ---------------- IMAGE SLIDER (Kept Original) ---------------- */
 
 const ProjectImageSlider = ({ images, title }) => {
   const [current, setCurrent] = useState(0);
@@ -363,6 +338,7 @@ const ProjectImageSlider = ({ images, title }) => {
               <path d="M15 19l-7-7 7-7" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
+
           <button
             onClick={nextImage}
             className="absolute cursor-cta right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-indigo-600 text-white p-2 rounded-full opacity-0 group-hover/slider:opacity-100 transition-all z-10"
@@ -392,13 +368,13 @@ const ProjectImageSlider = ({ images, title }) => {
 
 const HomeProjects = () => {
 
-  // 🔥 React Query caching for projects
   const { data: featuredProjects = [], isLoading } = useQuery({
     queryKey: ["projects"],
     queryFn: async () => {
       const response = await projectService.getProjects();
       const allProjects = response.data || response;
-      return allProjects.filter((p) => p.featured).slice(0, 3);
+      // ✅ Filtering logic restored: Only featured OR published
+      return allProjects.filter((p) => p.featured || p.isPublished).slice(0, 3);
     },
   });
 
@@ -406,10 +382,11 @@ const HomeProjects = () => {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
+      variants={sectionVariants}
+      initial="hidden"
+      whileInView="show"
+      exit="exit" // Enable exit animation
+      viewport={{ once: false, margin: "-120px" }} // Set once to false for repetition
       className="bg-white py-16 md:py-24"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -452,7 +429,7 @@ const HomeProjects = () => {
               className="group cursor-project flex flex-col h-full"
             >
               <div className="bg-white rounded-[2rem] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-slate-100 overflow-hidden transition-all duration-500 flex flex-col h-full border-b-4 hover:border-b-indigo-600 hover:shadow-[0_25px_60px_rgba(79,70,229,0.15)]">
-                
+
                 <div className="aspect-video bg-slate-50 relative overflow-hidden">
                   <ProjectImageSlider images={project.images} title={project.title} />
                 </div>
@@ -479,7 +456,7 @@ const HomeProjects = () => {
 
                   <div className="mt-auto pt-6 border-t border-slate-50 flex justify-between items-center">
                     <Link
-                      to="/projects"
+                      to={`/projects`}
                       className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
                     >
                       View Details <i className="fa-solid fa-caret-right"></i>
@@ -487,28 +464,17 @@ const HomeProjects = () => {
 
                     <div className="flex gap-4">
                       {project.githubLink && (
-                        <a
-                          href={project.githubLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-slate-400 cursor-cta hover:text-slate-900 transition-colors"
-                        >
+                        <a href={project.githubLink} target="_blank" rel="noreferrer" className="text-slate-400 cursor-cta hover:text-slate-900 transition-colors">
                           <i className="fa-brands fa-github text-xl"></i>
                         </a>
                       )}
                       {project.liveLink && (
-                        <a
-                          href={project.liveLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-slate-400 cursor-cta hover:text-indigo-600 transition-colors"
-                        >
+                        <a href={project.liveLink} target="_blank" rel="noreferrer" className="text-slate-400 cursor-cta hover:text-indigo-600 transition-colors">
                           <i className="fa-solid fa-rocket text-lg"></i>
                         </a>
                       )}
                     </div>
                   </div>
-
                 </div>
               </div>
             </motion.div>

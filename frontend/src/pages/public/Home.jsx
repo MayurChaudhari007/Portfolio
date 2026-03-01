@@ -86,6 +86,7 @@ import HomeAbout from "./HomeAbouts";
 const HomeSkills = lazy(() => import("./HomeSkills"));
 const HomeProjects = lazy(() => import("./HomeProjects"));
 const HomeBlogs = lazy(() => import("./HomeBlogs"));
+const HomeContact = lazy(() => import("./HomeContact"));
 
 /* ---------------- SKELETON FALLBACKS ---------------- */
 
@@ -147,7 +148,10 @@ const Home = () => {
       <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
         <HomeBlogs />
       </Suspense>
-
+      <Suspense fallback={<SectionSkeleton height="h-[600px]" />}>
+        <HomeContact/>
+      </Suspense>
+      {/* <HomeContact/> */}
     </div>
   );
 };
